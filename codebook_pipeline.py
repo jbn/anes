@@ -272,6 +272,8 @@ def _parse_codes(var_type, code_lines):
 
             if line.startswith(' '):
                 parts.append(line.strip())
+            elif line.endswith(":") or line.upper() == line:
+                continue  # XXX: This is a divider
             else:
                 assert False, (line, code_lines)
 
@@ -279,11 +281,6 @@ def _parse_codes(var_type, code_lines):
         coding[k] = _sstrip(" ".join(parts))
 
     return coding
-
-
-def temp(sections, var_def):
-    if var_def['var_name'] in {'VCF0735', 'VCF0735', 'VCF0976', 'VCF9067'}:
-        return Done(var_def)
 
 
 def parse_valid_codes(sections, var_def):
