@@ -1,5 +1,6 @@
 import re
 from collections import OrderedDict
+from copy import deepcopy
 from modpipe import Done
 
 
@@ -327,3 +328,40 @@ def parse_notes(sections, var_def):
 def pop_res(sections, var_def):
     assert not sections, sections
     return var_def
+
+
+def merge_codes(var_def):
+    valid_codes = var_def.pop('valid_codes', {})
+    missing_codes = var_def.pop('missing_codes', {})
+
+    if not valid_codes:
+        if len(missing_codes) == 0:
+            return
+        elif len(missing_codes) == 1:
+            assert list(missing_codes) == ['UNIFORM'], var_def['name']
+            var_def['codes'] = deepcopy(missing_codes)
+        else:
+            assert False, var_def['name']
+
+    merged = OrderedDict()
+    for group, valid_code_group in valid_codes.items():
+        codes = deepcopy(valid_code_group)
+        valid, missing = set(codes), set()
+
+        missing_code_group = missing_codes.get(group)
+        if missing_code_group is None:
+            if len(missing_codes) == 1:
+                missing_code_group = missing_codes['UNIFORM']
+            else:
+                missing_code_group = {}
+
+        for k, v in missing_code_group.items():
+            assert k not in codes, k
+            missing.add(k)
+            codes[k] = v
+
+        merged[group] = OrderedDict([('codes', codes),
+                                     ('valid', valid),
+                                     ('missing', missing)])
+
+    var_def['codes'] = merged
