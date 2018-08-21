@@ -102,7 +102,7 @@ LINE_PATCHES = {'3   Not sure; depends; DK; no opinion':
 
 
 def _sstrip(s):
-    return EXTRANEOUS_WHITESPACE_RE.sub(s, " ")
+    return EXTRANEOUS_WHITESPACE_RE.sub(" ", s)
 
 
 def _assert_and_pop_blank(lines):
@@ -236,26 +236,31 @@ def _extract_code_line(line):
         return '0-365', 'RANGE'
 
 
-def _parse_codes(var_type, code_lines):
+def _parse_codes(code_lines):
     coding = OrderedDict()
 
     k, parts = None, []
 
     for line in code_lines:
         pair = _extract_code_line(line)
+
         if pair is not None:
+
             if k is not None and parts:
+                # Commit the last entry.
                 coding[k] = _sstrip(" ".join(parts))
 
-            k = pair[0]
-            parts = [pair[1]]
+            # Create the next one.
+            k, parts = pair[0], [pair[1]]
         else:
+            # The last k, v pair is being continued.
             if line.strip() == '.':
-                continue  # ... continuation
+                parts.append(".")
+                continue  # ... numeric continuation
 
-            if line.startswith(' '):
+            if line.startswith(' '):  # Indented for last parts.
                 parts.append(line.strip())
-            elif line.endswith(":") or line.upper() == line:
+            elif line.endswith(":") or (line.upper() == line and line):
                 continue  # XXX: This is a divider
             else:
                 assert False, (line, code_lines)
@@ -267,24 +272,22 @@ def _parse_codes(var_type, code_lines):
 
 
 def parse_valid_codes(sections, var_def):
-    var_type = var_def['var_type']
     valid_codes = sections.pop('VALID_CODES', None)
 
     if valid_codes is not None:
         codes = OrderedDict()
         for group, lines in _extract_code_groups(valid_codes).items():
-            codes[group] = _parse_codes(var_type, lines)
+            codes[group] = _parse_codes(lines)
         var_def['valid_codes'] = codes
 
 
 def parse_missing_codes(sections, var_def):
-    var_type = var_def['var_type']
     missing_codes = sections.pop('MISSING_CODES', None)
 
     if missing_codes is not None:
         codes = OrderedDict()
         for group, lines in _extract_code_groups(missing_codes).items():
-            codes[group] = _parse_codes(var_type, lines)
+            codes[group] = _parse_codes(lines)
         var_def['missing_codes'] = codes
 
 
