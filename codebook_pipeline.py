@@ -67,8 +67,6 @@ VAR_KINDS = {'AUTHORITARIANISM',
 
 SECTION_RE = re.compile("^([A-Z\_]+):$\n^([\-]+)", re.M)
 
-QUESTION_PREFIX = re.compile("^[^:]: .*$")
-
 KNOWN_TYPES = {'Character-1', 'Numeric  Dec 0-1', 'Numeric  Dec 4-1'}
 
 SIMPLE_CODE_RE = re.compile("^([0-9\-,]+|INAP)\.$")
@@ -185,22 +183,7 @@ def parse_type(sections, var_def):
 
 
 def parse_question(sections, var_def):
-    assert 'QUESTION' in sections, sections
-
-    questions, parts = [], []
-
-    for line in sections.pop('QUESTION'):
-        if QUESTION_PREFIX.match(line):
-            if parts:
-                questions.append(_sstrip(" ".join(parts)))
-            parts = [line]
-        else:
-            parts.append(line)
-
-    if parts:
-        questions.append(_sstrip(" ".join(parts)))
-
-    var_def['question'] = questions
+    var_def['prompt'] = sections.pop('QUESTION')
 
 
 def _extract_code_groups(lines):
