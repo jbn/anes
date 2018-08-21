@@ -361,7 +361,7 @@ def merge_codes(var_def):
             codes[k] = v
 
         merged[group] = OrderedDict([('codes', codes),
-                                     ('valid', valid),
-                                     ('missing', missing)])
+                                     ('valid', list(valid)),
+                                     ('missing', list(missing))])
 
     var_def['codes'] = merged
