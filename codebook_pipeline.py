@@ -96,7 +96,11 @@ LINE_PATCHES = {'3   Not sure; depends; DK; no opinion':
                 '3-Digit Number 1-182 Coded,  Except:':
                 '1-182',
                 '999.MD (codes 6-9 in any of: VCF0993,VCF0994,':
-                '999. MD (codes 6-9 in any of: VCF0993,VCF0994,'}
+                '999. MD (codes 6-9 in any of: VCF0993,VCF0994,',
+                "'forms'": "     'forms'",
+                'Cross Section (1992)': '    Cross Section (1992)',
+                '(1992)': '     (1992)',
+                'worked for pay': '    worked for pay'}
 
 
 def _sstrip(s):
@@ -267,9 +271,7 @@ def _parse_codes(var_type, code_lines):
                 continue  # ... continuation
 
             if line.startswith(' '):
-                parts.append(line[1:])
-            elif line in {"'forms'", 'Cross Section (1992)', '(1992)', 'worked for pay'}:
-                parts.append(line)
+                parts.append(line.strip())
             else:
                 assert False, (line, code_lines)
 
@@ -280,7 +282,7 @@ def _parse_codes(var_type, code_lines):
 
 
 def temp(sections, var_def):
-    if var_def['var_name'] in {'VCF0735', 'VCF0976', 'VCF9067'}:
+    if var_def['var_name'] in {'VCF0735', 'VCF0735', 'VCF0976', 'VCF9067'}:
         return Done(var_def)
 
 
