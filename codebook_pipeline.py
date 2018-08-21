@@ -89,6 +89,16 @@ SOURCE_VAR_RE = re.compile("^(\d{4}): (.*)$")
 EXTRANEOUS_WHITESPACE_RE = re.compile("\s{2,}")
 
 
+LINE_PATCHES = {'3   Not sure; depends; DK; no opinion':
+                '3.   Not sure; depends; DK; no opinion',
+                '0 -100.   Degrees as given':
+                '0-100.   Degrees as given',
+                '3-Digit Number 1-182 Coded,  Except:':
+                '1-182',
+                '999.MD (codes 6-9 in any of: VCF0993,VCF0994,':
+                '999. MD (codes 6-9 in any of: VCF0993,VCF0994,'}
+
+
 def _sstrip(s):
     return EXTRANEOUS_WHITESPACE_RE.sub(s, " ")
 
@@ -98,8 +108,8 @@ def _assert_and_pop_blank(lines):
     assert line == ''
 
 
-def setup_pair(lines):
-    return lines, OrderedDict()
+def setup(lines):
+    return [LINE_PATCHES.get(line, line) for line in lines], OrderedDict()
 
 
 def skip_general_notes(lines, var_def):
@@ -214,19 +224,7 @@ def _extract_code_groups(lines):
     return groups
 
 
-LINE_PATCHES = {'3   Not sure; depends; DK; no opinion':
-                '3.   Not sure; depends; DK; no opinion',
-                '0 -100.   Degrees as given':
-                '0-100.   Degrees as given',
-                '3-Digit Number 1-182 Coded,  Except:':
-                '1-182',
-                '999.MD (codes 6-9 in any of: VCF0993,VCF0994,':
-                '999. MD (codes 6-9 in any of: VCF0993,VCF0994,'}
-
-
 def _extract_code_line(line):
-    line = LINE_PATCHES.get(line, line)
-
     m = SIMPLE_CODE_RE.match(line)
     if m:
         return m.group(1), ''
