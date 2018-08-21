@@ -11,59 +11,59 @@ RACE_SUMMARIES = {"Race summary, 3 categories",
                   "Race-ethnicity summary, 4 categories",
                   "Race-ethnicity summary, 7 categories"}
 
-VAR_KINDS = {'AUTHORITARIANISM',
-             'CANDIDATE AFFECTS',
-             'CANDIDATE CONTACT',
-             'CANDIDATE TRAITS',
-             'CANDIDATES',
-             'CANDIDATES Mention 1',
-             'CANDIDATES Mention 2',
-             'CANDIDATES Mention 3',
-             'CANDIDATES Mention 4',
-             'CANDIDATES Mention 5',
-             'CONDITION/GOALS OF U.S.',
-             'DEMOGRAPHICS',
-             'ECONOMIC WELL-BEING',
-             'ELECTION',
-             'ELECTION/RACE DESCRIPTION',
-             'EQUALITARIANISM',
-             'GROUP THERMOMETER',
-             'HOUSEHOLD COMPOSITION',
-             'IDEOLOGY',
-             'INTERVIEW DESCRIPTION',
-             'ISSUES',
-             'ISSUES Mention 1',
-             'ISSUES Mention 2',
-             'ISSUES Mention 3',
-             'IWR DESCRIPTION',
-             'IWR OBSERVATION',
-             'MEDIA',
-             'MOBILIZATION',
-             'MORAL TRADITIONALISM',
-             'PARTIES',
-             'PARTIES Mention 1',
-             'PARTIES Mention 2',
-             'PARTIES Mention 3',
-             'PARTIES Mention 4',
-             'PARTIES Mention 5',
-             'PARTISANSHIP',
-             'PERSONAL EFFICACY',
-             'POLITICAL ENGAGEMENT',
-             'POLITICAL FIGURE THERMOMETER',
-             'POLITICAL INTEREST',
-             'POLITICAL KNOWLEDGE',
-             'POLITICAL KNOWLEDGE Mention 1',
-             'POLITICAL KNOWLEDGE Mention 2',
-             'POLITICAL KNOWLEDGE Mention 3',
-             'RACE SUMMARY',
-             'RACIAL RESENTMENT',
-             'RELIGIOSITY',
-             'SAMPLE DESCRIPTION',
-             'SOCIAL TRUST',
-             'STUDY ADMIN',
-             'STUDY VARIABLE',
-             'SYSTEM SUPPORT',
-             'VOTE VALIDATION'}
+MODULES = {'AUTHORITARIANISM',
+           'CANDIDATE AFFECTS',
+           'CANDIDATE CONTACT',
+           'CANDIDATE TRAITS',
+           'CANDIDATES',
+           'CANDIDATES Mention 1',
+           'CANDIDATES Mention 2',
+           'CANDIDATES Mention 3',
+           'CANDIDATES Mention 4',
+           'CANDIDATES Mention 5',
+           'CONDITION/GOALS OF U.S.',
+           'DEMOGRAPHICS',
+           'ECONOMIC WELL-BEING',
+           'ELECTION',
+           'ELECTION/RACE DESCRIPTION',
+           'EQUALITARIANISM',
+           'GROUP THERMOMETER',
+           'HOUSEHOLD COMPOSITION',
+           'IDEOLOGY',
+           'INTERVIEW DESCRIPTION',
+           'ISSUES',
+           'ISSUES Mention 1',
+           'ISSUES Mention 2',
+           'ISSUES Mention 3',
+           'IWR DESCRIPTION',
+           'IWR OBSERVATION',
+           'MEDIA',
+           'MOBILIZATION',
+           'MORAL TRADITIONALISM',
+           'PARTIES',
+           'PARTIES Mention 1',
+           'PARTIES Mention 2',
+           'PARTIES Mention 3',
+           'PARTIES Mention 4',
+           'PARTIES Mention 5',
+           'PARTISANSHIP',
+           'PERSONAL EFFICACY',
+           'POLITICAL ENGAGEMENT',
+           'POLITICAL FIGURE THERMOMETER',
+           'POLITICAL INTEREST',
+           'POLITICAL KNOWLEDGE',
+           'POLITICAL KNOWLEDGE Mention 1',
+           'POLITICAL KNOWLEDGE Mention 2',
+           'POLITICAL KNOWLEDGE Mention 3',
+           'RACE SUMMARY',
+           'RACIAL RESENTMENT',
+           'RELIGIOSITY',
+           'SAMPLE DESCRIPTION',
+           'SOCIAL TRUST',
+           'STUDY ADMIN',
+           'STUDY VARIABLE',
+           'SYSTEM SUPPORT',
+           'VOTE VALIDATION'}
 
 SECTION_RE = re.compile("^([A-Z\_]+):$\n^([\-]+)", re.M)
 
@@ -121,24 +121,24 @@ def skip_general_notes(lines, var_def):
 
 
 def extract_variable_name(lines, var_def):
-    var_def['var_name'] = lines.pop(0)
-    assert VAR_NAME_RE.match(var_def['var_name']), var_def['var_name']
+    var_def['name'] = lines.pop(0)
+    assert VAR_NAME_RE.match(var_def['name']), var_def['name']
 
     _assert_and_pop_blank(lines)
 
 
-def extract_variable_desc(lines, var_def):
+def extract_module_and_desc(lines, var_def):
     line = lines.pop(0)
     m = STUDY_VARIABLE_RE.match(line)
     if not m:
         assert line in RACE_SUMMARIES, line
-        var_def['desc_kind'] = 'RACE SUMMARY'
+        var_def['module'] = 'RACE SUMMARY'
         var_def['desc'] = "Race-ethnicity summary, 7 categories"
     else:
-        var_def['desc_kind'] = m.group(1)
+        var_def['module'] = m.group(1)
         var_def['desc'] = m.group(2)
 
-    assert var_def['desc_kind'] in VAR_KINDS, var_def['desc_kind']
+    assert var_def['module'] in MODULES, var_def['module']
 
     _assert_and_pop_blank(lines)
 
