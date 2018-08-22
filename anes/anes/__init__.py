@@ -157,15 +157,16 @@ class ANES:
         return res
 
     def select(self, k, *other_ks, years=None, strip_missings=False):
-        ks = []
+        ks = [k] + list(other_ks)
+        strip_years = False
 
         if years is not None:
-            ks.append('VCF0004')
+            if 'VCF0004' not in ks:
+                ks.append('VCF0004')
+                strip_years = True
+
             if isinstance(years, Number):
                 years = [years]
-
-        ks.append(k)
-        ks.extend(list(other_ks))
 
         sub_df = self.df[ks].copy()
 
@@ -182,5 +183,8 @@ class ANES:
                 conds.append(~np.in1d(x, list(missing_values)))
 
             sub_df = sub_df[reduce(and_, conds)]
+
+        if strip_years:
+            del sub_df['VCF0004']
 
         return sub_df
