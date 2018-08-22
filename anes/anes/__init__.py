@@ -20,8 +20,8 @@ __author__ = "John Bjorn Nelson"
 __email__ = "jbn@abreka.com"
 
 
-def header_pair(line, char="="):
-    return [line, char * len(line)]
+def header(line, level=1):
+    return ("#" * level) + " " + line
 
 
 def var_def_to_md_str(cb, name, include_notes=True):
@@ -29,11 +29,11 @@ def var_def_to_md_str(cb, name, include_notes=True):
     if not var_def:
         return 'Not Found'
 
-    lines = header_pair(name)
+    lines = [header(name)]
 
     module = var_def.get('module')
     if module:
-        lines.extend(header_pair(module, "-"))
+        lines.append(header(module, 2))
 
     desc = var_def.get('desc', [])
     if module:
@@ -41,22 +41,29 @@ def var_def_to_md_str(cb, name, include_notes=True):
 
     prompt = var_def.get('prompt')
     if prompt:
-        lines.extend(header_pair('Prompt', "-"))
+        lines.append(header('Prompt', 2))
         lines.extend(prompt)
 
     if 'codes' in var_def:
-        lines.extend(header_pair('Codes', "-"))
+        lines.append(header('Codes', 2))
 
     for k, codes in var_def.get('codes', {}).items():
         if k != 'UNIFORM':
-            lines.extend(header_pair(k, "~"))
+            lines.append(header(k, 3))
         tbl = sorted(list(codes['codes'].items()))
         s = tabulate(tbl, headers=['Code', 'Desc'], tablefmt='pipe')
         lines.append(s)
 
+    source_vars = var_def.get('source_vars')
+    if source_vars:
+        tbl = [[k, ", ".join(v)] for k, v in sorted(source_vars.items())]
+        lines.append(header('Source Vars', 2))
+        s = tabulate(tbl, headers=['Year', 'Source Vars'], tablefmt='pipe')
+        lines.append(s)
+
     notes = var_def.get('notes')
     if notes and include_notes:
-        lines.extend(header_pair('Notes', "-"))
+        lines.append(header('Notes', 2))
         lines.extend(prompt)
 
     return "\n".join(lines)
@@ -137,6 +144,17 @@ class ANES:
 
         s = tabulate(serps, headers=['Name', 'Module', 'Desc', 'Prompt'], tablefmt='pipe')
         return Markdown(s)
+
+    def search_for_vars(self, q):
+        matches = var_names_matching(self.cb, q)
+        if not matches:
+            return None
+
+        res, var_defs = OrderedDict(), self.cb['var_defs']
+        for k in sorted(matches):
+            var_def = var_defs[k]
+            res[k] = var_def.get('desc', '')
+        return res
 
     def select(self, k, *other_ks, years=None, strip_missings=False):
         ks = []
