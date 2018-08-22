@@ -122,7 +122,7 @@ def skip_general_notes(lines, var_def):
 
 
 def extract_variable_name(lines, var_def):
-    var_def['name'] = lines.pop(0)
+    var_def['name'] = lines.pop(0).upper()
     assert VAR_NAME_RE.match(var_def['name']), var_def['name']
 
     _assert_and_pop_blank(lines)
