@@ -1,0 +1,11 @@
+LICENSE
+MANIFEST.in
+README.rst
+setup.cfg
+setup.py
+./anes/__init__.py
+anes.egg-info/PKG-INFO
+anes.egg-info/SOURCES.txt
+anes.egg-info/dependency_links.txt
+anes.egg-info/requires.txt
+anes.egg-info/top_level.txt
