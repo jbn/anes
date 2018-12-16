@@ -7,7 +7,7 @@ import modpipe
 
 
 VERSION_RE = re.compile("^RELEASE VERSION:\s+(\d+)")
-LINE_SEP = "=" * 77 + "\n"
+LINE_SEP = "=" * 99 + "\n"
 DATA_PATH = os.path.join("data", "raw", "anes_timeseries_cdf_codebook_var.txt")
 OUTPUT_PATH = os.path.join("data", "clean", "anes_cb.json")
 
@@ -18,15 +18,15 @@ def defn_iterator(file_path):
 
     with open(file_path, errors='ignore') as fp:
 
-        for line in fp:
-            if version is None:
-                version = VERSION_RE.search(line).group(1)
-                yield {'version': version}
-            elif line == LINE_SEP:
-                break
+        # for line in fp:
+        #     if version is None:
+        #         version = VERSION_RE.search(line).group(1)
+        #         yield {'version': version}
+        #     elif line == LINE_SEP:
+        #         break
 
         for line in fp:
-            if line == LINE_SEP:
+            if line == LINE_SEP and lines:
                 yield lines
                 lines = []
             else:

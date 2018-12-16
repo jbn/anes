@@ -26,6 +26,6 @@ $(CB): $(CB_TXT) extract_codebook.py codebook_pipeline.py
 $(CB_TXT):
 	@mkdir -p data/raw
 	wget \
-		https://www.electionstudies.org/wp-content/uploads/2017/02/anes_timeseries_cdf_codebook_var.txt \
+		https://electionstudies.org/wp-content/uploads/2018/12/anes_timeseries_cdf_codebook_var.txt \
 		-O $(CB_TXT)
 		
